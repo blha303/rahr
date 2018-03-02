@@ -13,17 +13,17 @@ def main():
     results = get("https://torrentapi.org/pubapi_v2.php", params={"mode": "search", "search_string": " ".join(args.search), "token": token, "format": "json"}).json()["torrent_results"]
     if results:
         for n,r in enumerate(results):
-            print("{}: {} ({})".format(n, r["filename"], r["category"]))
+            print("{}: {} ({})".format(n, r["filename"], r["category"]), file=sys.stderr)
         try:
             if args.choice is not None:
                 choice = results[args.choice]
             else:
                 choice = results[int(input("Pick: "))]
         except IndexError:
-            print("Invalid choice")
+            print("Invalid choice", file=sys.stderr)
             return 2
         except ValueError:
-            print("Not a number")
+            print("Not a number", file=sys.stderr)
             return 3
         print(r["download"], end="")
         return 0
