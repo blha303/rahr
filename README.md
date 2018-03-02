@@ -16,7 +16,7 @@ $ pip3 install git+https://github.com/blha303/rahr
 Usage
 -----
 
-```python
+```
 $ rahr big buck bunny
 0: Big.Buck.Bunny.1080p (Movies/Legal)
 1: Big.Buck.Bunny.720p (Movies/Legal)
