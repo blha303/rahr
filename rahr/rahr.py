@@ -4,6 +4,7 @@ from argparse import ArgumentParser
 import sys
 from subprocess import Popen
 from distutils.spawn import find_executable
+from os import environ as env
 
 token = get("https://torrentapi.org/pubapi_v2.php?get_token=get_token").json()["token"]
 
@@ -11,8 +12,7 @@ def main():
     parser = ArgumentParser()
     parser.add_argument("search", nargs="+")
     parser.add_argument("--choice", type=int)
-    parser.add_argument("--peerflix", help="If present, calls peerflix with the selected magnet link", action="store_true")
-    parser.add_argument("--player", help="When --peerflix is set, calls --<player> when peerflix is launched")
+    parser.add_argument("--peerflix", help="If present, calls peerflix with the selected magnet link. If env variable PEERFLIX_PLAYER is set, launches given player, otherwise video streams on <local ip>:8888", action="store_true")
     args = parser.parse_args()
     results = get("https://torrentapi.org/pubapi_v2.php", params={"mode": "search", "search_string": " ".join(args.search), "token": token, "format": "json"}).json()["torrent_results"]
     if results:
@@ -33,7 +33,7 @@ def main():
         else:
             choice = results[0]
         if args.peerflix:
-            process = Popen([find_executable("peerflix"), choice["download"], ("--" + args.player if args.player else "")])
+            process = Popen([find_executable("peerflix"), choice["download"], ("--" + env["PEERFLIX_PLAYER"] if env.get("PEERFLIX_PLAYER", None) else "")])
             process.wait()
         else:
             print(choice["download"], end="")
