@@ -12,6 +12,7 @@ def main():
     parser.add_argument("search", nargs="+")
     parser.add_argument("--choice", type=int)
     parser.add_argument("--peerflix", help="If present, calls peerflix with the selected magnet link", action="store_true")
+    parser.add_argument("--player", help="When --peerflix is set, calls --<player> when peerflix is launched")
     args = parser.parse_args()
     results = get("https://torrentapi.org/pubapi_v2.php", params={"mode": "search", "search_string": " ".join(args.search), "token": token, "format": "json"}).json()["torrent_results"]
     if results:
@@ -32,7 +33,7 @@ def main():
         else:
             choice = results[0]
         if args.peerflix:
-            process = Popen([find_executable("peerflix"), choice["download"]])
+            process = Popen([find_executable("peerflix"), choice["download"], ("--" + args.player if args.player else "")])
             process.wait()
         else:
             print(choice["download"], end="")
