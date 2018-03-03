@@ -14,7 +14,8 @@ def main():
     parser.add_argument("--choice", type=int)
     parser.add_argument("--peerflix", help="If present, calls peerflix with the selected magnet link. If env variable PEERFLIX_PLAYER is set, launches given player, otherwise video streams on <local ip>:8888", action="store_true")
     args = parser.parse_args()
-    results = get("https://torrentapi.org/pubapi_v2.php", params={"mode": "search", "search_string": " ".join(args.search), "token": token, "format": "json"}).json()["torrent_results"]
+    query = get("https://torrentapi.org/pubapi_v2.php", params={"mode": "search", "search_string": " ".join(args.search), "token": token, "format": "json"}).json()
+    results = query.get("torrent_results")
     if results:
         for n,r in enumerate(results):
             print("{}: {} ({})".format(n, r["filename"], r["category"]), file=sys.stderr)
@@ -39,7 +40,11 @@ def main():
             print(choice["download"], end="")
         return 0
     else:
-        print("No results", file=sys.stderr)
+        error_message = "({}) {}".format(
+            query.get('error_code'),
+            query.get('error', "Something weird happened")
+        )
+        print(error_message, file=sys.stderr)
         return 1
 
 if __name__ == "__main__":
