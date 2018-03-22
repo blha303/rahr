@@ -27,7 +27,8 @@ def main():
                 if args.choice is not None:
                     choice = results[args.choice]
                 else:
-                    choice = results[int(input("Pick: "))]
+                    print("Pick: ", file=sys.stderr)
+                    choice = results[int(input())]
             except IndexError:
                 print("Invalid choice", file=sys.stderr)
                 return 2
@@ -40,7 +41,7 @@ def main():
             process = Popen([find_executable("peerflix"), choice["download"], ("--" + env["PEERFLIX_PLAYER"] if env.get("PEERFLIX_PLAYER", None) else "")])
             process.wait()
         else:
-            print(choice["download"], end="")
+            print(choice["download"])
         return 0
     else:
         error_message = "({}) {}".format(
