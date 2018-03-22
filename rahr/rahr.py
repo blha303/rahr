@@ -6,7 +6,7 @@ from subprocess import Popen
 from distutils.spawn import find_executable
 from os import environ as env
 
-token = get("https://torrentapi.org/pubapi_v2.php?get_token=get_token").json()["token"]
+token = get("https://torrentapi.org/pubapi_v2.php?get_token=get_token&app_id=blha303_rahr").json()["token"]
 
 def main():
     parser = ArgumentParser()
