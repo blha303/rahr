@@ -9,7 +9,7 @@ setup(
     entry_points = {
         "console_scripts": ['rahr = rahr.rahr:main']
         },
-    version = "1.3.0",
+    version = "1.3.1",
     description = desc,
     long_description = desc,
     author = "Steven Smith",

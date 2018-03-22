@@ -15,7 +15,7 @@ def main():
     parser.add_argument("--peerflix", help="If present, calls peerflix with the selected magnet link. If env variable PEERFLIX_PLAYER is set, launches given player, otherwise video streams on <local ip>:8888", action="store_true")
     args = parser.parse_args()
     def q():
-        return get("https://torrentapi.org/pubapi_v2.php", params={"mode": "search", "search_string": " ".join(args.search), "token": token, "format": "json"}).json()
+        return get("https://torrentapi.org/pubapi_v2.php", params={"app_id": "blha303_rahr","mode": "search", "search_string": " ".join(args.search), "token": token, "format": "json"}).json()
     query = q()
     if not query.get("torrent_results"):
         query = q() # Sometimes the search fails
