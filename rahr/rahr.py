@@ -6,14 +6,13 @@ from subprocess import Popen
 from distutils.spawn import find_executable
 from os import environ as env
 
-token = get("https://torrentapi.org/pubapi_v2.php?get_token=get_token&app_id=blha303_rahr").json()["token"]
-
 def main():
     parser = ArgumentParser()
     parser.add_argument("search", nargs="+")
     parser.add_argument("--choice", type=int)
     parser.add_argument("--peerflix", help="If present, calls peerflix with the selected magnet link. If env variable PEERFLIX_PLAYER is set, launches given player, otherwise video streams on <local ip>:8888", action="store_true")
     args = parser.parse_args()
+    token = get("https://torrentapi.org/pubapi_v2.php?get_token=get_token&app_id=blha303_rahr").json()["token"]
     def q():
         return get("https://torrentapi.org/pubapi_v2.php", params={"app_id": "blha303_rahr","mode": "search", "search_string": " ".join(args.search), "token": token, "format": "json"}).json()
     query = q()
