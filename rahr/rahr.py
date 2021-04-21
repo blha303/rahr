@@ -10,18 +10,20 @@ def main():
     parser = ArgumentParser()
     parser.add_argument("search", nargs="+")
     parser.add_argument("--choice", type=int)
-    parser.add_argument("--peerflix", help="If present, calls peerflix with the selected magnet link. If env variable PEERFLIX_PLAYER is set, launches given player, otherwise video streams on <local ip>:8888", action="store_true")
+    parser.add_argument("--peerflix", help="If present, calls peerflix with the selected link. If env variable PEERFLIX_PLAYER is set, launches given player, otherwise video streams on <local ip>:8888", action="store_true")
+    parser.add_argument("--jackett-host", help="Specify jackett host in form host:port. Defaults to localhost:9117. can also be provided with JACKETT_HOST", default=env.get("JACKETT_HOST", "localhost:9117"))
+    parser.add_argument("--jackett-api-key", help="Specify jackett API key. can also be provided with JACKETT_API_KEY", default=env.get("JACKETT_API_KEY"))
+    parser.add_argument("--jackett-indexer", help="Specify jackett indexer. Defaults to 'all'", default="all")
     args = parser.parse_args()
-    token = get("https://torrentapi.org/pubapi_v2.php?get_token=get_token&app_id=blha303_rahr").json()["token"]
-    def q():
-        return get("https://torrentapi.org/pubapi_v2.php", params={"app_id": "blha303_rahr","mode": "search", "search_string": " ".join(args.search), "token": token, "format": "json"}).json()
-    query = q()
-    if not query.get("torrent_results"):
-        query = q() # Sometimes the search fails
-    results = query.get("torrent_results")
+    if not args.jackett_api_key:
+        print("Please provide jackett api key", file=sys.stderr)
+        return 1
+    query = get("http://{}/api/v2.0/indexers/{}/results".format(args.jackett_host, args.jackett_indexer), params={"apikey": args.jackett_api_key, "Query": " ".join(args.search)}).json()
+    results = [r for r in query.get("Results") if r["Seeders"] > 0]
+    results = sorted(results, key=lambda _: _["Grabs"])
     if results:
         for n,r in enumerate(results):
-            print("{}: {} ({})".format(n, r["filename"], r["category"]), file=sys.stderr)
+            print("{0}: {Title} ({CategoryDesc}) - S:{Seeders} P:{Peers} {Tracker}".format(n, **r), file=sys.stderr)
         if len(results) > 1:
             try:
                 if args.choice is not None:
@@ -38,10 +40,10 @@ def main():
         else:
             choice = results[0]
         if args.peerflix:
-            process = Popen([find_executable("peerflix"), choice["download"], ("--" + env["PEERFLIX_PLAYER"] if env.get("PEERFLIX_PLAYER", None) else "")])
+            process = Popen([find_executable("peerflix"), choice["MagnetUri"] if choice["MagnetUri"] else choice["Link"], ("--" + env["PEERFLIX_PLAYER"] if env.get("PEERFLIX_PLAYER", None) else "")])
             process.wait()
         else:
-            print(choice["download"])
+            print(choice["MagnetUri"] if choice["MagnetUri"] else choice["Link"])
         return 0
     else:
         error_message = "({}) {}".format(

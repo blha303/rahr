@@ -1,6 +1,6 @@
 from setuptools import setup
 
-desc = "A Python program that finds files of a certain nature on a certain website. For use in piping magnet links to programs that support them"
+desc = "A python program to search for torrents via Jackett and provide links to stdout"
 
 setup(
     name = "rahr",
@@ -9,11 +9,11 @@ setup(
     entry_points = {
         "console_scripts": ['rahr = rahr.rahr:main']
         },
-    version = "1.3.3",
+    version = "2.0.0",
     description = desc,
     long_description = desc,
-    author = "Steven Smith",
-    author_email = "stevensmith.ome@gmail.com",
+    author = "Alyssa Smith",
+    author_email = "alyssa.dev.smith+rahr@gmail.com",
     license = "MIT",
     url = "https://github.com/blha303/rahr",
     classifiers = [
